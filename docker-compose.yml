@@ -1,0 +1,83 @@
+services:
+  user-db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'users'
+      MYSQL_ROOT_PASSWORD: 'test1234!'
+    ports:
+      - "3307:3306"
+    volumes:
+      - my-db-volume-1:/var/lib/mysql
+    networks:
+      demo_net:
+        ipv4_address: 172.30.0.2
+
+  device-db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'devices'
+      MYSQL_ROOT_PASSWORD: 'test1234!'
+    ports:
+      - "3308:3306"
+    volumes:
+      - my-db-volume-2:/var/lib/mysql
+    networks:
+      demo_net:
+        ipv4_address: 172.30.0.3
+
+  user-microservice-spring:
+    restart: always
+    build:
+      context: ./user-microservice
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_IP=user-db
+      - DB_PORT=3306
+      - DB_DBNAME=users
+      - DB_USER=root
+      - DB_PASSWORD=test1234!
+    networks:
+      demo_net:
+        ipv4_address: 172.30.0.4
+
+  device-microservice-spring:
+    restart: always
+    build:
+      context: ./device-microservice
+      dockerfile: ./Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_IP=device-db
+      - DB_PORT=3306
+      - DB_DBNAME=devices
+      - DB_USER=root
+      - DB_PASSWORD=test1234!
+    networks:
+      demo_net:
+        ipv4_address: 172.30.0.5
+
+  frontend:
+    build:
+      context: ./energy-management-frontend/energy-fe
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_USER_SERVICE_URL=http://localhost:8080
+      - REACT_APP_DEVICE_SERVICE_URL=http://localhost:8081
+    networks:
+      demo_net:
+        ipv4_address: 172.30.0.6
+
+networks:
+  demo_net:
+    external: true
+
+volumes:
+  my-db-volume-1:
+  my-db-volume-2:

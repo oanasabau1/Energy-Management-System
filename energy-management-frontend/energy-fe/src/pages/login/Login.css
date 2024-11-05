@@ -1,0 +1,69 @@
+.wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.wrapper h1 {
+    font-size: 40px;
+    text-align: center;
+    color: forestgreen;
+}
+
+.wrapper .input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin: 30px 0;
+}
+
+.input-box input {
+    width: 86%;
+    height: 40%;
+    background: transparent;
+    border: 2px solid rgba(0, 0, 0, .2);
+    outline: none;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 20px 45px 20px 20px;
+}
+
+.input-box input::placeholder {
+    color: gray;
+}
+
+.input-box .icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+}
+
+.wrapper .login-btn {
+    width: 104%;
+    height: 50px;
+    background-color: forestgreen;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+}
+
+.wrapper .login-btn:hover {
+    background-color: forestgreen;
+}
+
+.error-message {
+    color: forestgreen;
+    font-size: 14px;
+    margin-bottom: 20px;
+}

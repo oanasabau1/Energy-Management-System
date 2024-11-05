@@ -1,0 +1,53 @@
+.dashboard-container {
+    position: relative;
+    padding: 20px;
+}
+
+.logout-button {
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-content {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+.button-group button {
+    padding: 10px 20px;
+    background-color: forestgreen;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.access-denied-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.access-denied-container h1 {
+    color: #ff4d4d;
+}
+
