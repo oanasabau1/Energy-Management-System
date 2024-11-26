@@ -1,6 +1,4 @@
-# Energy Management System 
-
-## About
+# Energy Management System - Request-Reply Communication
 
 This project is the first part of the final project for the Distributed Systems course. The Energy Management System (EMS) is a web application that manages users and their associated smart energy metering devices, with a frontend and two backend microservices for efficient, modular operations. The system enables CRUD operations for users and devices, supporting both administrators and clients with distinct roles and permissions through Role-Based Access Control (RBAC).
 
