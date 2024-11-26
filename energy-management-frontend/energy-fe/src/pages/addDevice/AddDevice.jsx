@@ -37,7 +37,7 @@ function AddDevice(props) {
         };
 
         try {
-            const response = await fetch('http://localhost:8081/device', {
+            const response = await fetch('http://device-microservice-spring.localhost/device', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

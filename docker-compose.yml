@@ -10,8 +10,7 @@ services:
     volumes:
       - my-db-volume-1:/var/lib/mysql
     networks:
-      demo_net:
-        ipv4_address: 172.30.0.2
+      - demo_net
 
   device-db:
     image: mysql:latest
@@ -24,42 +23,80 @@ services:
     volumes:
       - my-db-volume-2:/var/lib/mysql
     networks:
-      demo_net:
-        ipv4_address: 172.30.0.3
+      - demo_net
+
+  monitoring-db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'monitoring'
+      MYSQL_ROOT_PASSWORD: 'test1234!'
+    ports:
+      - "3309:3306"
+    volumes:
+      - my-db-volume-3:/var/lib/mysql
+    networks:
+      - demo_net
 
   user-microservice-spring:
     restart: always
     build:
       context: ./user-microservice
       dockerfile: ./Dockerfile
-    ports:
-      - "8080:8080"
     environment:
       - DB_IP=user-db
       - DB_PORT=3306
       - DB_DBNAME=users
       - DB_USER=root
       - DB_PASSWORD=test1234!
+    deploy:
+      replicas: 2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-microservice-spring.rule=Host(`user-microservice-spring.localhost`)"
+      - "traefik.http.services.user-microservice-spring.loadbalancer.server.port=8080"
     networks:
-      demo_net:
-        ipv4_address: 172.30.0.4
+      - demo_net
 
   device-microservice-spring:
     restart: always
     build:
       context: ./device-microservice
       dockerfile: ./Dockerfile
-    ports:
-      - "8081:8081"
     environment:
       - DB_IP=device-db
       - DB_PORT=3306
       - DB_DBNAME=devices
       - DB_USER=root
       - DB_PASSWORD=test1234!
+    deploy:
+      replicas: 2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.device-microservice-spring.rule=Host(`device-microservice-spring.localhost`)"
+      - "traefik.http.services.device-microservice-spring.loadbalancer.server.port=8081"
     networks:
-      demo_net:
-        ipv4_address: 172.30.0.5
+      - demo_net
+
+  monitoring-microservice-spring:
+    restart: always
+    build:
+      context: ./monitoring-microservice
+      dockerfile: ./Dockerfile
+    environment:
+      - DB_IP=monitoring-db
+      - DB_PORT=3306
+      - DB_DBNAME=monitoring
+      - DB_USER=root
+      - DB_PASSWORD=test1234!
+    deploy:
+      replicas: 1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.monitoring-microservice-spring.rule=Host(`monitoring-microservice-spring.localhost`)"
+      - "traefik.http.services.monitoring-microservice-spring.loadbalancer.server.port=8082"
+    networks:
+      - demo_net
 
   frontend:
     build:
@@ -70,9 +107,39 @@ services:
     environment:
       - REACT_APP_USER_SERVICE_URL=http://localhost:8080
       - REACT_APP_DEVICE_SERVICE_URL=http://localhost:8081
+      - REACT_APP_MONITORING_SERVICE_URL=http://localhost:8082
     networks:
-      demo_net:
-        ipv4_address: 172.30.0.6
+      - demo_net
+
+  rabbitmq:
+    image: rabbitmq:4.0.3-management
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
+      - rabbitmq_logs:/var/log/rabbitmq
+    networks:
+      - demo_net
+
+  reverse-proxy:
+   image: traefik:v3.2
+   command:
+     - --api.insecure=true
+     - --providers.docker
+     - --accesslog=true
+     - --accesslog.filepath=/var/log/traefik/access.log
+     - --log.level=DEBUG
+     - --entrypoints.web.address=:80
+   ports:
+     - "80:80"
+     - "8080:8080"
+   volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - traefik_logs:/var/log/traefik
+   networks:
+     - demo_net
 
 networks:
   demo_net:
@@ -81,3 +148,7 @@ networks:
 volumes:
   my-db-volume-1:
   my-db-volume-2:
+  my-db-volume-3:
+  rabbitmq_data:
+  rabbitmq_logs:
+  traefik_logs:

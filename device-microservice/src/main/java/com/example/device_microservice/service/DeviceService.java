@@ -25,6 +25,11 @@ public class DeviceService {
         return devices.stream().map(deviceMapper::toDTO).toList();
     }
 
+    public DeviceDTO getDeviceById(Long deviceId) {
+        Device device = deviceRepository.findById(deviceId).orElse(null);
+        return deviceMapper.toDTO(device);
+    }
+
     public List<DeviceDTO> getAllDevicesByUserId(Long userId) {
         List<Device> devices = deviceRepository.findAllByUserId(userId);
         return devices.stream().map(deviceMapper::toDTO).toList();

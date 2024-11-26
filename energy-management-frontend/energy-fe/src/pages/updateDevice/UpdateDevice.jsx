@@ -31,7 +31,7 @@ function UpdateDevice() {
         };
 
         try {
-            const response = await fetch(`http://localhost:8081/device/update/${deviceId}`, {
+            const response = await fetch(`http://device-microservice-spring.localhost/device/update/${deviceId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

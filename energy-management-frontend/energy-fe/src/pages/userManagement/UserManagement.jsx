@@ -20,7 +20,7 @@ function UserManagement() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://localhost:8080/users');
+                const response = await fetch('http://user-microservice-spring.localhost/users');
                 if (!response.ok) {
                     throw new Error('Failed to fetch users');
                 }
@@ -44,7 +44,7 @@ function UserManagement() {
     const handleDelete = async (userId) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
-                const response = await fetch(`http://localhost:8080/user/delete/${userId}`, {
+                const response = await fetch(`http://user-microservice-spring.localhost/user/delete/${userId}`, {
                     method: 'DELETE',
                 });
                 if (!response.ok) {

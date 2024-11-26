@@ -16,7 +16,7 @@ function UserDashboard() {
         const fetchUser = async () => {
             if (userId) {
                 try {
-                    const response = await fetch(`http://localhost:8081/user/${userId}`);
+                    const response = await fetch(`http://device-microservice-spring.localhost/user/${userId}`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch user');
                     }
@@ -39,7 +39,7 @@ function UserDashboard() {
             setLoading(true);
 
             try {
-                const response = await fetch(`http://localhost:8081/user/${userId}/devices`);
+                const response = await fetch(`http://device-microservice-spring.localhost/user/${userId}/devices`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch devices');
                 }
@@ -66,6 +66,11 @@ function UserDashboard() {
         navigate('/login'); // Redirect to the login page
     };
 
+    // Function to navigate to device details
+    const handleDeviceDetails = (deviceId) => {
+        navigate(`/device/${deviceId}`); // Navigate to the device details page
+    };
+
     return (
         <div>
             <div className="logout-container">
@@ -85,6 +90,11 @@ function UserDashboard() {
                                     <span className="device-address">{device.address}</span>
                                 </div>
                                 <span className="device-consumption">{device.maxHourlyConsumption} kWh</span>
+                                <button className="btn"
+                                    onClick={() => handleDeviceDetails(device.deviceId)}
+                                >
+                                    View Details
+                                </button>
                             </li>
                         ))}
                     </ul>

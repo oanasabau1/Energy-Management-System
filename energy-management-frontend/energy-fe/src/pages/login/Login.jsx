@@ -18,7 +18,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8080/login', {
+            const response = await fetch('http://user-microservice-spring.localhost/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

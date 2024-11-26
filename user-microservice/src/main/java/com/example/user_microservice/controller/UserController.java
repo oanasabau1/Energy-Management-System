@@ -36,7 +36,7 @@ public class UserController {
     ResponseEntity<UserDTO> createUser(@RequestBody UserRegisterDTO dto){
         UserDTO registeredUser = userService.registerUser(dto);
 
-        WebClient client = WebClient.create("http://172.30.0.5:8081");
+        WebClient client = WebClient.create("http://device-microservice-spring:8081");
         ResponseEntity<?> responseEntity = client.post()
                 .uri("/user")
                 .bodyValue(registeredUser)
@@ -59,7 +59,7 @@ public class UserController {
     ResponseEntity<UserDTO> updateUser(@PathVariable("id") Long userId, @RequestBody UserDTO dto){
         UserDTO updatedUser = userService.updateUser(userId, dto);
 
-        WebClient client = WebClient.create("http://172.30.0.5:8081");
+        WebClient client = WebClient.create("http://device-microservice-spring:8081");
         ResponseEntity<?> responseEntity = client.put()
                 .uri("/user/update/{id}", userId)
                 .bodyValue(updatedUser)
@@ -76,7 +76,7 @@ public class UserController {
     ResponseEntity<?> deleteUser(@PathVariable("id") Long userId){
         userService.deleteUser(userId);
 
-        WebClient client = WebClient.create("http://172.30.0.5:8081");
+        WebClient client = WebClient.create("http://device-microservice-spring:8081");
         ResponseEntity<?> responseEntity = client.delete()
                 .uri("/user/delete/{id}", userId)
                 .retrieve()

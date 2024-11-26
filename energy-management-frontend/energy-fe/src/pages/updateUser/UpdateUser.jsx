@@ -22,7 +22,7 @@ function UpdateUser() {
         const updatedUser = { username, password };
 
         try {
-            const response = await fetch(`http://localhost:8080/user/update/${userId}`, {
+            const response = await fetch(`http://user-microservice-spring.localhost/user/update/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

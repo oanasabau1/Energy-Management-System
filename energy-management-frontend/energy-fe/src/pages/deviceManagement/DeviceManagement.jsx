@@ -11,7 +11,7 @@ function DeviceManagement() {
     useEffect(() => {
         const fetchDevices = async () => {
             try {
-                const response = await fetch('http://localhost:8081/devices');
+                const response = await fetch('http://device-microservice-spring.localhost/devices');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -39,7 +39,7 @@ function DeviceManagement() {
     const handleDelete = async (deviceId) => {
          if (window.confirm('Are you sure you want to delete this device?')) {
              try {
-                 const response = await fetch(`http://localhost:8081/device/delete/${deviceId}`, {
+                 const response = await fetch(`http://device-microservice-spring.localhost/device/delete/${deviceId}`, {
                      method: 'DELETE',
                      headers: {
                          'Content-Type': 'application/json'

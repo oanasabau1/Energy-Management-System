@@ -9,6 +9,7 @@ import AddUser from "./pages/addUser/AddUser";
 import DeviceManagement from "./pages/deviceManagement/DeviceManagement";
 import AddDevice from "./pages/addDevice/AddDevice";
 import UpdateDevice from "./pages/updateDevice/UpdateDevice";
+import DevicePage from "./pages/devicePage/DevicePage";
 
 function App() {
     return(
@@ -22,6 +23,7 @@ function App() {
                 <Route path='/devices' element={<DeviceManagement />} />
                 <Route path='/device' element={<AddDevice />} />
                 <Route path='/device/update/:deviceId' element={<UpdateDevice />} />
+                <Route path="/device/:id" element={<DevicePage />} />
                 <Route path='/users' element={<UserManagement />} />
                 <Route path='/user' element={<AddUser />} />
                 <Route path='/user/update/:userId' element={<UpdateUser />} />
