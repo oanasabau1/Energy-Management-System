@@ -47,12 +47,24 @@ public class ChatController {
     @MessageMapping("/read")
     public void handleReadMessage(@Payload ReadReceipt receipt) {
         try {
-            System.out.println("Read receipt received for message ID: " + receipt.getMessageId());
+            System.out.printf(
+                    "Read receipt received: [Message ID: %s, Sender ID: %s, Receiver ID: %s, Timestamp: %s]%n",
+                    receipt.getMessageId(),
+                    receipt.getSenderId(),
+                    receipt.getReceiverId(),
+                    receipt.getTimestamp()
+            );
             receipt.setTimestamp(LocalDateTime.now());
+
             template.convertAndSend("/topic/read/" + receipt.getSenderId(), receipt);
-            System.out.println("Read receipt sent to sender ID: " + receipt.getSenderId());
+
+            System.out.printf(
+                    "Read receipt sent to sender's topic: /topic/read/%s%n",
+                    receipt.getSenderId()
+            );
         } catch (Exception e) {
-            System.err.println("Error handling read receipt: " + e.getMessage());
+            System.err.println("Error handling read receipt:");
+            e.printStackTrace();
         }
     }
 }

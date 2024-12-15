@@ -16,6 +16,7 @@ function Chat() {
     const [typingStatus, setTypingStatus] = useState("");
     const [missingParams, setMissingParams] = useState(false);
     const [stompClient, setStompClient] = useState(null);
+    const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
         if (!senderId || !receiverId || !senderUsername || !receiverUsername) {
@@ -30,22 +31,9 @@ function Chat() {
 
         const client = new Client({
             webSocketFactory: () => socket,
-            onConnect: () => {
-                console.log("WebSocket connected.");
-
-                // Subscribe to messages
-                client.subscribe(`/topic/chat/${senderId}/${receiverId}`, handleMessage);
-                client.subscribe(`/topic/chat/${receiverId}/${senderId}`, handleMessage);
-
-                // Subscribe to typing status
-                client.subscribe(`/topic/typing/${receiverId}/${senderId}`, handleTypingStatus);
-
-                // Subscribe to read receipts
-                client.subscribe(`/topic/read/${senderId}`, handleReadReceipt);
-
-                // Mark all messages as read after connecting
-                markMessagesAsRead();
-            },
+            reconnectDelay: 5000,
+            debug: (str) => console.log(str),
+            onConnect: () => setupSubscriptions(client),
             onDisconnect: () => console.log("WebSocket disconnected."),
             onStompError: (frame) => console.error("WebSocket error: ", frame),
         });
@@ -59,27 +47,32 @@ function Chat() {
         };
     }, [senderId, receiverId, senderUsername, receiverUsername]);
 
-    // Handle incoming messages
+    const setupSubscriptions = (client) => {
+        console.log("WebSocket connected. Setting up subscriptions.");
+
+        client.subscribe(`/topic/chat/${senderId}/${receiverId}`, handleMessage);
+        client.subscribe(`/topic/chat/${receiverId}/${senderId}`, handleMessage);
+        client.subscribe(`/topic/typing/${receiverId}/${senderId}`, handleTypingStatus);
+        client.subscribe(`/topic/notification/${senderId}`, handleNotification);
+        client.subscribe(`/topic/read/${senderId}`, handleReadReceipt);
+    };
+
     const handleMessage = (message) => {
         const msg = JSON.parse(message.body);
-        console.log("New message received: ", msg);
-        console.log("The message was read by the receiver!");
+        console.log("Message read successfully by: ", receiverUsername);
 
         setMessages((prev) => {
             if (prev.some((m) => m.messageId === msg.messageId)) {
-                console.log("Duplicate message detected. Skipping...");
-                return prev; // Prevent duplicates
+                return prev;
             }
             return [...prev, msg];
         });
 
-        // Mark the message as read if it's sent by the other user
         if (msg.senderId === receiverId) {
             markMessageAsRead(msg.messageId);
         }
     };
 
-    // Handle typing status
     const handleTypingStatus = (message) => {
         const typingMsg = JSON.parse(message.body);
         console.log("Typing status received: ", typingMsg);
@@ -90,20 +83,49 @@ function Chat() {
         }
     };
 
-    // Handle read receipts
+    const handleNotification = (message) => {
+        const notification = JSON.parse(message.body);
+        console.log("Notification received:", notification);
+
+        setNotifications((prev) => [
+            ...prev,
+            `${notification.senderUsername} sent you a new message.`,
+        ]);
+
+        setTimeout(() => {
+            setNotifications((prev) => prev.slice(1));
+        }, 2000);
+    };
+
     const handleReadReceipt = (message) => {
         const receipt = JSON.parse(message.body);
         console.log("Read receipt received: ", receipt);
 
-        // Update the read status of the message
         setMessages((prev) =>
             prev.map((msg) =>
                 msg.messageId === receipt.messageId ? { ...msg, read: true } : msg
             )
         );
+
+        sendReadNotificationToSender(receipt);
     };
 
-    // Send new message
+    const sendReadNotificationToSender = (receipt) => {
+        if (!stompClient?.connected) return;
+
+        const readNotification = {
+            senderUsername: receiverUsername,
+            messageId: receipt.messageId,
+        };
+
+        console.log("Sending read notification to sender:", readNotification);
+
+        stompClient.publish({
+            destination: `/app/notification/${senderId}`,
+            body: JSON.stringify(readNotification),
+        });
+    };
+
     const sendMessage = () => {
         if (!newMessage.trim()) return;
         if (!stompClient?.connected) {
@@ -133,11 +155,16 @@ function Chat() {
         sendTypingStatus(false);
     };
 
-    // Send typing status
     const sendTypingStatus = (isTyping) => {
         if (!stompClient?.connected) return;
 
-        const typingMessage = { senderId, senderUsername, receiverId, receiverUsername, isTyping };
+        const typingMessage = {
+            senderId,
+            senderUsername,
+            receiverId,
+            receiverUsername,
+            isTyping,
+        };
         console.log("Sending typing status: ", typingMessage);
 
         stompClient.publish({
@@ -146,7 +173,6 @@ function Chat() {
         });
     };
 
-    // Mark a single message as read
     const markMessageAsRead = (messageId) => {
         if (!stompClient?.connected) return;
 
@@ -161,17 +187,6 @@ function Chat() {
             destination: "/app/read",
             body: JSON.stringify(readReceipt),
         });
-    };
-
-    // Mark all unread messages as read
-    const markMessagesAsRead = () => {
-        if (!stompClient?.connected) return;
-
-        const unreadMessages = messages.filter(
-            (msg) => msg.senderId === receiverId && !msg.read
-        );
-
-        unreadMessages.forEach((msg) => markMessageAsRead(msg.messageId));
     };
 
     if (missingParams) {
@@ -191,14 +206,10 @@ function Chat() {
                     {messages.map((msg) => (
                         <div
                             key={msg.messageId}
-                            className={`message ${
-                                msg.senderId === senderId || msg.self ? "self" : "other"
-                            }`}
+                            className={`message ${msg.senderId === senderId || msg.self ? "self" : "other"}`}
                         >
                             <div className="message-content">
-                                <strong>
-                                    {msg.senderId === senderId || msg.self ? "You" : msg.senderUsername}:
-                                </strong>
+                                <strong>{msg.senderId === senderId || msg.self ? "You" : msg.senderUsername}:</strong>
                                 <span>{msg.message}</span>
                                 {msg.read && <span className="read-status">✔ Read</span>}
                             </div>

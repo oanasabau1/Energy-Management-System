@@ -6,7 +6,7 @@
     border: 1px solid #ddd;
     border-radius: 10px;
     overflow: hidden;
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .chat-box {
@@ -84,6 +84,36 @@
     text-align: center;
     border-radius: 5px;
     font-size: 14px;
+}
+.notifications {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.notification {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    animation: fadeInOut 3s ease;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 
