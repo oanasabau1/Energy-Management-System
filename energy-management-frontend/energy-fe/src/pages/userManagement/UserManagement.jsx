@@ -69,6 +69,12 @@ function UserManagement() {
         navigate('/login');
     };
 
+    const startChat = (userId, username) => {
+        const senderId = 1;
+        const senderUsername = 'admin';
+        navigate(`/chat/?senderId=${senderId}&senderUsername=${senderUsername}&receiverId=${userId}&receiverUsername=${username}`);
+    };
+
     if (!isAdmin) {
         return (
             <div className="access-denied-container">
@@ -97,6 +103,7 @@ function UserManagement() {
                         <li key={user.userId} className="user-item">
                             <span className="user-name">{user.username}</span>
                             <div className="button-group">
+                                <button className="chat-button" onClick={() => startChat(user.userId, user.username)}>Chat</button>
                                 <button className="edit-button" onClick={() => handleEdit(user.userId)}>Edit</button>
                                 <button className="delete-button" onClick={() => handleDelete(user.userId)}>Delete</button>
                             </div>

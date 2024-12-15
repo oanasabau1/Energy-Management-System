@@ -71,6 +71,12 @@ function UserDashboard() {
         navigate(`/device/${deviceId}`); // Navigate to the device details page
     };
 
+    const startChat = (userId, username) => {
+        const receiverId = 1;
+        const receiverUsername = 'admin';
+        navigate(`/chat/?senderId=${userId}&senderUsername=${username}&receiverId=${receiverId}&receiverUsername=${receiverUsername}`);
+    }
+
     return (
         <div>
             <div className="logout-container">
@@ -100,6 +106,10 @@ function UserDashboard() {
                     </ul>
                 )}
             </div>
+            {user && (
+                <button className="start-chat-button" onClick={() => startChat(user.userId, user.username)}>
+                    Start Chat with Admin</button>
+            )}
         </div>
     );
 }

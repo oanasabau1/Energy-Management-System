@@ -1,4 +1,5 @@
 services:
+
   user-db:
     image: mysql:latest
     restart: always
@@ -98,6 +99,20 @@ services:
     networks:
       - demo_net
 
+  chat-microservice-spring:
+    restart: always
+    build:
+      context: ./chat-microservice
+      dockerfile: ./Dockerfile
+    deploy:
+      replicas: 1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chat-microservice-spring.rule=Host(`chat-microservice-spring.localhost`)"
+      - "traefik.http.services.chat-microservice-spring.loadbalancer.server.port=8083"
+    networks:
+      - demo_net
+
   frontend:
     build:
       context: ./energy-management-frontend/energy-fe
@@ -108,6 +123,7 @@ services:
       - REACT_APP_USER_SERVICE_URL=http://localhost:8080
       - REACT_APP_DEVICE_SERVICE_URL=http://localhost:8081
       - REACT_APP_MONITORING_SERVICE_URL=http://localhost:8082
+      - REACT_APP_CHAT_SERVICE_URL=http://localhost:8083
     networks:
       - demo_net
 

@@ -40,6 +40,7 @@ const Login = () => {
             // Store user information in local storage
             localStorage.setItem('userId', data.userId); // Assuming userId is returned from your API
             localStorage.setItem('isAdmin', data.isAdmin); // Assuming isAdmin is a boolean
+            localStorage.setItem('username', data.username); // Assuming username is returned from your API, needed for Chat messaging
 
             // Automatic navigation based on user role
             if (data.isAdmin) {

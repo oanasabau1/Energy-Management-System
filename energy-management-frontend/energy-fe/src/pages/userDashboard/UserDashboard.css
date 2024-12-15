@@ -9,7 +9,6 @@
 
 .logout-container {
     position: relative;
-
 }
 
 .logout-button {
@@ -73,6 +72,19 @@ h2 {
 }
 
 .btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: forestgreen;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.start-chat-button {
     display: block;
     margin: 20px auto;
     padding: 10px 20px;
