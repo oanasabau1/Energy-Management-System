@@ -16,7 +16,13 @@ function UserDashboard() {
         const fetchUser = async () => {
             if (userId) {
                 try {
-                    const response = await fetch(`http://device-microservice-spring.localhost/user/${userId}`);
+                    const response = await fetch(`http://device-microservice-spring.localhost/user/${userId}`, {
+                        'method': 'GET',
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Authorization': localStorage.getItem('jwtToken'),
+                        },
+                    });
                     if (!response.ok) {
                         throw new Error('Failed to fetch user');
                     }
@@ -39,7 +45,13 @@ function UserDashboard() {
             setLoading(true);
 
             try {
-                const response = await fetch(`http://device-microservice-spring.localhost/user/${userId}/devices`);
+                const response = await fetch(`http://device-microservice-spring.localhost/user/${userId}/devices`, {
+                    'method': 'GET',
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('jwtToken'),
+                    },
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch devices');
                 }

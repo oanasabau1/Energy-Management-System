@@ -35,6 +35,7 @@ function UpdateDevice() {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('jwtToken'),
                 },
                 body: JSON.stringify(updatedDeviceData),
             });

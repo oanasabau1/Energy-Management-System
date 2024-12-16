@@ -32,7 +32,13 @@ function DevicePage() {
   useEffect(() => {
     const fetchDeviceDetails = async () => {
       try {
-        const response = await fetch(`http://device-microservice-spring.localhost/device/${id}`);
+        const response = await fetch(`http://device-microservice-spring.localhost/device/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('jwtToken'),
+            },
+        });
         if (!response.ok) throw new Error('Failed to fetch device details');
         const data = await response.json();
         setDevice(data);
@@ -75,7 +81,13 @@ function DevicePage() {
   // Fetch energy data
   const fetchEnergyData = async (date) => {
     try {
-      const response = await fetch(`http://monitoring-microservice-spring.localhost/device/${id}/measurements/${date}`);
+      const response = await fetch(`http://monitoring-microservice-spring.localhost/device/${id}/measurements/${date}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('jwtToken'),
+        },
+      });
       if (!response.ok) throw new Error('Failed to fetch energy data');
       const data = await response.json();
       console.log(data);

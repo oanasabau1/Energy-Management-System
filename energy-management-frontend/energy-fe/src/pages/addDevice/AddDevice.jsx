@@ -41,6 +41,7 @@ function AddDevice(props) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('jwtToken'),
                 },
                 body: JSON.stringify(deviceData),
             });

@@ -1,4 +1,4 @@
-package com.example.user_microservice;
+package com.example.user_microservice.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

@@ -26,6 +26,7 @@ function UpdateUser() {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('jwtToken'),
                 },
                 body: JSON.stringify(updatedUser),
             });
