@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { v4 as uuidv4 } from "uuid";
+import { MessageBox, SystemMessage } from "react-chat-elements";
+import "react-chat-elements/dist/main.css";
 import "./Chat.css";
 
 function Chat() {
@@ -19,16 +21,15 @@ function Chat() {
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
+        console.log("Initializing WebSocket connection...");
+
         if (!senderId || !receiverId || !senderUsername || !receiverUsername) {
             console.warn("Missing required query parameters.");
             setMissingParams(true);
             return;
         }
 
-        console.log("Initializing WebSocket connection...");
-        const socketUrl = "http://chat-microservice-spring.localhost/chat";
-        const socket = new SockJS(socketUrl);
-
+        const socket = new SockJS("http://chat-microservice-spring.localhost/chat");
         const client = new Client({
             webSocketFactory: () => socket,
             reconnectDelay: 5000,
@@ -48,34 +49,29 @@ function Chat() {
     }, [senderId, receiverId, senderUsername, receiverUsername]);
 
     const setupSubscriptions = (client) => {
-        console.log("WebSocket connected. Setting up subscriptions.");
-
+        console.log("Subscribing to topics...");
         client.subscribe(`/topic/chat/${senderId}/${receiverId}`, handleMessage);
         client.subscribe(`/topic/chat/${receiverId}/${senderId}`, handleMessage);
         client.subscribe(`/topic/typing/${receiverId}/${senderId}`, handleTypingStatus);
         client.subscribe(`/topic/notification/${senderId}`, handleNotification);
-        client.subscribe(`/topic/read/${senderId}`, handleReadReceipt);
     };
 
     const handleMessage = (message) => {
         const msg = JSON.parse(message.body);
-        console.log("Message read successfully by: ", receiverUsername);
+        console.log("handleMessage: New message received:", msg);
 
         setMessages((prev) => {
             if (prev.some((m) => m.messageId === msg.messageId)) {
-                return prev;
+                console.log("Duplicate message detected. Skipping...");
+                return prev;  // Avoid duplicates
             }
             return [...prev, msg];
         });
-
-        if (msg.senderId === receiverId) {
-            markMessageAsRead(msg.messageId);
-        }
     };
 
     const handleTypingStatus = (message) => {
         const typingMsg = JSON.parse(message.body);
-        console.log("Typing status received: ", typingMsg);
+        console.log("handleTypingStatus: Typing status received:", typingMsg);
 
         if (typingMsg.senderId !== senderId) {
             setTypingStatus(`${typingMsg.senderUsername} is typing...`);
@@ -85,53 +81,18 @@ function Chat() {
 
     const handleNotification = (message) => {
         const notification = JSON.parse(message.body);
-        console.log("Notification received:", notification);
+        console.log("handleNotification: Notification received:", notification);
 
         setNotifications((prev) => [
             ...prev,
             `${notification.senderUsername} sent you a new message.`,
         ]);
-
-        setTimeout(() => {
-            setNotifications((prev) => prev.slice(1));
-        }, 2000);
-    };
-
-    const handleReadReceipt = (message) => {
-        const receipt = JSON.parse(message.body);
-        console.log("Read receipt received: ", receipt);
-
-        setMessages((prev) =>
-            prev.map((msg) =>
-                msg.messageId === receipt.messageId ? { ...msg, read: true } : msg
-            )
-        );
-
-        sendReadNotificationToSender(receipt);
-    };
-
-    const sendReadNotificationToSender = (receipt) => {
-        if (!stompClient?.connected) return;
-
-        const readNotification = {
-            senderUsername: receiverUsername,
-            messageId: receipt.messageId,
-        };
-
-        console.log("Sending read notification to sender:", readNotification);
-
-        stompClient.publish({
-            destination: `/app/notification/${senderId}`,
-            body: JSON.stringify(readNotification),
-        });
+        setTimeout(() => setNotifications((prev) => prev.slice(1)), 3000);
     };
 
     const sendMessage = () => {
         if (!newMessage.trim()) return;
-        if (!stompClient?.connected) {
-            console.error("WebSocket is not connected.");
-            return;
-        }
+        console.log("sendMessage: Sending new message:", newMessage);
 
         const message = {
             messageId: uuidv4(),
@@ -141,51 +102,28 @@ function Chat() {
             receiverUsername,
             message: newMessage,
             timestamp: new Date().toISOString(),
+            read: false,
         };
-
-        console.log("Sending message: ", message);
 
         stompClient.publish({
             destination: "/app/publish",
             body: JSON.stringify(message),
         });
 
-        setMessages((prev) => [...prev, { ...message, self: true }]);
+        setMessages((prev) => [
+            ...prev,
+            { ...message, read: true, timestamp: new Date().toISOString(), self: true },
+        ]);
         setNewMessage("");
         sendTypingStatus(false);
     };
 
+
     const sendTypingStatus = (isTyping) => {
-        if (!stompClient?.connected) return;
-
-        const typingMessage = {
-            senderId,
-            senderUsername,
-            receiverId,
-            receiverUsername,
-            isTyping,
-        };
-        console.log("Sending typing status: ", typingMessage);
-
+        console.log("sendTypingStatus: Sending typing status:", isTyping);
         stompClient.publish({
             destination: "/app/typing",
-            body: JSON.stringify(typingMessage),
-        });
-    };
-
-    const markMessageAsRead = (messageId) => {
-        if (!stompClient?.connected) return;
-
-        const readReceipt = {
-            messageId,
-            senderId,
-            receiverId,
-        };
-        console.log("Sending read receipt: ", readReceipt);
-
-        stompClient.publish({
-            destination: "/app/read",
-            body: JSON.stringify(readReceipt),
+            body: JSON.stringify({ senderId, senderUsername, receiverId, receiverUsername, isTyping }),
         });
     };
 
@@ -204,19 +142,17 @@ function Chat() {
                 <h2>Chat with {receiverUsername}</h2>
                 <div className="messages">
                     {messages.map((msg) => (
-                        <div
+                        <MessageBox
                             key={msg.messageId}
-                            className={`message ${msg.senderId === senderId || msg.self ? "self" : "other"}`}
-                        >
-                            <div className="message-content">
-                                <strong>{msg.senderId === senderId || msg.self ? "You" : msg.senderUsername}:</strong>
-                                <span>{msg.message}</span>
-                                {msg.read && <span className="read-status">✔ Read</span>}
-                            </div>
-                        </div>
+                            position={msg.self ? "right" : "left"}
+                            type="text"
+                            text={msg.message}
+                            date={new Date(msg.timestamp).toString()}
+                            status={msg.read ? "read" : "received"}
+                        />
                     ))}
+                    {typingStatus && <SystemMessage text={typingStatus} />}
                 </div>
-                {typingStatus && <div className="typing-status">{typingStatus}</div>}
             </div>
 
             <div className="chat-input">

@@ -85,6 +85,7 @@
     border-radius: 5px;
     font-size: 14px;
 }
+/* Keep the existing CSS */
 .notifications {
     position: fixed;
     bottom: 20px;
@@ -102,19 +103,12 @@
 }
 
 @keyframes fadeInOut {
-    0% {
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
 }
+
 
 
 

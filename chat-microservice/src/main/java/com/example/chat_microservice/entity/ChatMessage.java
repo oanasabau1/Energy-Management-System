@@ -2,8 +2,6 @@ package com.example.chat_microservice.entity;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,5 +14,6 @@ public class ChatMessage {
     private Long receiverId;
     private String receiverUsername;
     private String message;
-    private LocalDateTime timestamp;
+    private String timestamp;
+    private boolean read = false;
 }
