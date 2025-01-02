@@ -61,7 +61,7 @@ h1 {
     gap: 10px;
 }
 
-.edit-button, .delete-button {
+.edit-button, .delete-button, .chat-button {
     padding: 5px 12px;
     font-size: 14px;
     border: none;
@@ -70,13 +70,16 @@ h1 {
 }
 
 .edit-button {
-    background-color: #4CAF50;
+    background-color: forestgreen;
     color: white;
 }
-
 
 .delete-button {
     background-color: #f44336;
     color: white;
 }
 
+.chat-button {
+    background-color: greenyellow;
+    color: white;
+}

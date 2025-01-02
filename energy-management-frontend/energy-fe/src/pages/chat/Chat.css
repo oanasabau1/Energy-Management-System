@@ -1,0 +1,114 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+
+.chat-box {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    margin: 5px 0;
+    max-width: 70%;
+    padding: 8px;
+    border-radius: 10px;
+    word-wrap: break-word;
+}
+
+.message.self {
+    align-self: flex-end;
+    background-color: #daf1f1;
+    text-align: right;
+}
+
+.message.other {
+    align-self: flex-start;
+    background-color: #eee;
+    text-align: left;
+}
+
+.message-content {
+    font-size: 14px;
+}
+
+.typing-status {
+    font-style: italic;
+    color: gray;
+    margin: 5px;
+    text-align: left;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: white;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.chat-input button {
+    padding: 8px 15px;
+    background-color: forestgreen;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.read-notification {
+    margin-top: 10px;
+    padding: 10px;
+    color: #ffffff;
+    background-color: #4caf50;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 14px;
+}
+/* Keep the existing CSS */
+.notifications {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.notification {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    animation: fadeInOut 3s ease;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+
+
+

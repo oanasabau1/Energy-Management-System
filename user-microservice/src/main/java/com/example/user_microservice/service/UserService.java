@@ -5,7 +5,7 @@ import com.example.user_microservice.dto.UserRegisterDTO;
 import com.example.user_microservice.entity.User;
 import com.example.user_microservice.mapper.UserMapper;
 import com.example.user_microservice.repository.UserRepository;
-import com.example.user_microservice.util.Security;
+import com.example.user_microservice.security.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

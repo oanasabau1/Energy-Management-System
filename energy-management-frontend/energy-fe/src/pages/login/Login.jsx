@@ -38,14 +38,16 @@ const Login = () => {
             console.log(data);
 
             // Store user information in local storage
-            localStorage.setItem('userId', data.userId); // Assuming userId is returned from your API
-            localStorage.setItem('isAdmin', data.isAdmin); // Assuming isAdmin is a boolean
+            localStorage.setItem('userId', data.user.userId); // Assuming userId is returned from your API
+            localStorage.setItem('isAdmin', data.user.isAdmin); // Assuming isAdmin is a boolean
+            localStorage.setItem('username', data.user.username); // Assuming username is returned from your API
+            localStorage.setItem('jwtToken', data.token); // Store the token in local storage
 
             // Automatic navigation based on user role
-            if (data.isAdmin) {
+            if (data.user.isAdmin) {
                 navigate('/admin-dashboard');
             } else {
-                navigate(`/user/${data.userId}/devices`); // Non-admin user navigation
+                navigate(`/user/${data.user.userId}/devices`); // Non-admin user navigation
             }
         } catch (error) {
             console.error('Error:', error.message);

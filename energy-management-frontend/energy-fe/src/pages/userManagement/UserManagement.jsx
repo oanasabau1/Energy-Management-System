@@ -20,7 +20,13 @@ function UserManagement() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://user-microservice-spring.localhost/users');
+                const response = await fetch('http://user-microservice-spring.localhost/users', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('jwtToken'),
+                    }
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch users');
                 }
@@ -46,12 +52,16 @@ function UserManagement() {
             try {
                 const response = await fetch(`http://user-microservice-spring.localhost/user/delete/${userId}`, {
                     method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('jwtToken'),
+                    }
                 });
                 if (!response.ok) {
                     throw new Error('Failed to delete user');
                 }
                 // Remove the deleted user from the state
-                setUsers(users.filter(user => user.userId !== userId)); // Change from user.id to user.userId
+                setUsers(users.filter(user => user.userId !== userId));
                 console.log(`User with ID ${userId} deleted`);
             } catch (err) {
                 console.error('Error deleting user:', err);
@@ -67,6 +77,12 @@ function UserManagement() {
     const handleLogout = () => {
         localStorage.clear(); // Clear local storage on logout
         navigate('/login');
+    };
+
+    const startChat = (userId, username) => {
+        const senderId = 1;
+        const senderUsername = 'admin';
+        navigate(`/chat/?senderId=${senderId}&senderUsername=${senderUsername}&receiverId=${userId}&receiverUsername=${username}`);
     };
 
     if (!isAdmin) {
@@ -97,8 +113,12 @@ function UserManagement() {
                         <li key={user.userId} className="user-item">
                             <span className="user-name">{user.username}</span>
                             <div className="button-group">
+                                <button className="chat-button"
+                                        onClick={() => startChat(user.userId, user.username)}>Chat
+                                </button>
                                 <button className="edit-button" onClick={() => handleEdit(user.userId)}>Edit</button>
-                                <button className="delete-button" onClick={() => handleDelete(user.userId)}>Delete</button>
+                                <button className="delete-button" onClick={() => handleDelete(user.userId)}>Delete
+                                </button>
                             </div>
                         </li>
                     ))}

@@ -25,7 +25,7 @@ public class HourlyConsumptionConsumer {
     @Autowired
     private HourlyConsumptionService hourlyConsumptionService;
 
-     @Scheduled(fixedRate = 3600000) // 1 hour
+    @Scheduled(fixedRate = 3600000) // 1 hour
     public void checkAndNotifyExcessConsumption() {
          List<Device> devices = deviceRepository.findAll();
          for (Device device : devices) {

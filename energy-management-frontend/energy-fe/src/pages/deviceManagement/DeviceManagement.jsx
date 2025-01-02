@@ -11,7 +11,13 @@ function DeviceManagement() {
     useEffect(() => {
         const fetchDevices = async () => {
             try {
-                const response = await fetch('http://device-microservice-spring.localhost/devices');
+                const response = await fetch('http://device-microservice-spring.localhost/devices', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('jwtToken'),
+                    },
+                });
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -42,7 +48,8 @@ function DeviceManagement() {
                  const response = await fetch(`http://device-microservice-spring.localhost/device/delete/${deviceId}`, {
                      method: 'DELETE',
                      headers: {
-                         'Content-Type': 'application/json'
+                         'Content-Type': 'application/json',
+                         'Authorization': localStorage.getItem('jwtToken'),
                      }
                  });
                  if (!response.ok) {

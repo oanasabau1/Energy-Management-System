@@ -1,4 +1,4 @@
-package com.example.user_microservice.util;
+package com.example.user_microservice.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
