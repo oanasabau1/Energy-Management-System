@@ -41,7 +41,10 @@ The third branch further enhances the system with:
 
    ```bash
    docker network create 172.30.0.0 demo-net
-  6. Build the containers:
+
+5. Create the databases in MySQL: users, devices, monitoring
+   
+6. Build the containers:
      
      ```bash
      docker-compose up --build
